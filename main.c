@@ -15,9 +15,11 @@
 #define DHTPIN 7 // dht pin
 
 int dhtval[5] = {0};
-int flag=0;
+int flag=0; 
+// flag°¡ 0ÀÌ¸é, ÇÑ µ¿ÀÛÀ» ¹«ÇÑ ¹İº¹ 
+// flag°¡ 1ÀÌ¸é, 1~3 µ¿ÀÛÀ» ÇÑ¹ø¾¿¸¸ ½ÇÇà 
 
-int pin_arr[7]={1, 4, 5, 26, 27, 28, 29}; // fnd ì—°ê²° í•€(ìˆœì„œëŒ€ë¡œ abcdefg)
+int pin_arr[7]={1, 4, 5, 26, 27, 28, 29}; // fnd ¿¬°á ÇÉ(¼ø¼­´ë·Î abcdefg) 
 int fnd_arr[10][7]={
 {1, 1, 1, 1, 1, 1, 0}, //0
 {0, 1, 1, 0, 0, 0, 0}, //1
@@ -30,9 +32,9 @@ int fnd_arr[10][7]={
 {1, 1, 1, 1, 1, 1, 1}, //8
 {1, 1, 1, 1, 0, 1, 1} //9
 };
-int led_pin[3]={21, 22, 23}; // 3ê°œì˜ led ì—°ê²° í•€
+int led_pin[3]={21, 22, 23}; // 3°³ÀÇ led ¿¬°á ÇÉ 
 
-void init()
+void init() // ÇÉ ÃÊ±âÈ­ 
 {
 	int i;
 	for(i=0; i<7; i++)
@@ -53,60 +55,52 @@ int read_dht() // error => return -1
 	uint8_t counter = 0;
 	uint8_t j=0, i;
 
-    for(i=0; i<5; i++) dhtval[i] = 0; // ë°°ì—´ ì´ˆê¸°í™”
+    for(i=0; i<5; i++) dhtval[i] = 0; // ¹è¿­ ÃÊ±âÈ­ 
 
-	pinMode( DHTPIN, OUTPUT );
-	digitalWrite( DHTPIN, LOW );
-	delay( 18 );
-	digitalWrite( DHTPIN, HIGH );
-	delayMicroseconds( 40 );
-	pinMode( DHTPIN, INPUT );
+	pinMode(DHTPIN, OUTPUT);
+	digitalWrite(DHTPIN, LOW);
+	delay(18);
+	digitalWrite(DHTPIN, HIGH);
+	delayMicroseconds(40);
+	pinMode(DHTPIN, INPUT);
 
-	for ( i = 0; i < MAXTIMINGS; i++ )
+	for (i = 0; i < MAXTIMINGS; i++)
 	{
-        	counter = 0;
-        	while ( digitalRead( DHTPIN ) == laststate )
-        	{
-            		counter++;
-            		delayMicroseconds( 1 );
-            		if ( counter == 255 )
-            		{
-                		break;
-            		}
-        	}
-        	laststate = digitalRead( DHTPIN );
+        counter = 0;
+        while ( digitalRead( DHTPIN ) == laststate )
+        {
+   			counter++;
+       		delayMicroseconds(1);
+       		if (counter == 255) break;
+    	}
+       	laststate = digitalRead( DHTPIN );
 
-        	if ( counter == 255 )
-            		break;
+        if (counter == 255) break;
 
-        	if ( (i >= 4) && (i % 2 == 0) )
-        	{
-            		dhtval[j / 8] <<= 1;
-            		if ( counter > 50 )
-                		dhtval[j / 8] |= 1;
-            		j++;
-        	}
+        if ( (i >= 4) && (i % 2 == 0) )
+        {
+  			dhtval[j / 8] <<= 1;
+    		if (counter > 50) dhtval[j / 8] |= 1;
+        	j++;
+    	}
 	}
 
 	if ((j >= 40) && (dhtval[4] == ( ( dhtval[0] + dhtval[1] + dhtval[2] + dhtval[3] ) & 0xFF) ))
-    	{
+    {
 		return 0; // success
-    	}
-	else
-	{
-		return -1; // fail
-    	}
+    }
+	else return -1; // fail
 }
 
 void func_1()
 {
-	init();
+	init(); // ÃÊ±âÈ­ 
 	int i, cnt=0;
-	for(i=0; i<3; i++) digitalWrite(led_pin[i], LOW);
+	for(i=0; i<3; i++) digitalWrite(led_pin[i], LOW); // LED ²ô°í ½ÃÀÛ 
 
 	while(1)
 	{
-		for(i=0; i<3; i++)
+		for(i=0; i<3; i++) // ¼øÂ÷ÀûÀ¸·Î Á¡µî 
 		{
 			digitalWrite(led_pin[i], HIGH);
 			delay(1000);
@@ -115,7 +109,7 @@ void func_1()
 		delay(1000);
 
 		cnt++;
-		if(cnt>=3 && flag==1) return;
+		if(cnt>=3 && flag==1) return; // 4¹øÀ» ¼±ÅÃÇßÀ» °æ¿ì(flag==1) 1¹ø¾¿¸¸ ¼öÇà 
 	}
 }
 void func_2()
@@ -124,7 +118,7 @@ void func_2()
 	int temp, error_cnt=0, cnt=0;
 	float f;
 
-	printf("input temp : ");
+	printf("input temp : "); // ¿Âµµ ÀÔ·Â¹Ş±â 
 	scanf(" %d", &temp);
 	while(1) // read dht sensor
 	{
@@ -137,8 +131,7 @@ void func_2()
 		else
 		{
 			f = dhtval[2] * 9. / 5. + 32;
-                	printf( "Humi = %d.%d %% Temp = %d.%d C (%.1f F)\n",
-                	dhtval[0], dhtval[1], dhtval[2], dhtval[3], f );
+            printf("Humi = %d.%d %% Temp = %d.%d C (%.1f F)\n", dhtval[0], dhtval[1], dhtval[2], dhtval[3], f); // Ãâ·Â 
 
 			if(dhtval[2]-1<= temp && temp <= dhtval[2]+1) // correct
 			{
@@ -147,30 +140,30 @@ void func_2()
 				delay(100);
 				softToneWrite(piezo, 0);
 			}
-        	}
+        }
 
 		if(error_cnt > 10)
-                {
-                        printf("dht senseor error\n");
-                        printf("please enter the q\n");
-                }
+        {
+            printf("dht senseor error\n");
+            printf("please enter the q\n");
+        }
 
 		delay(2000);
 		cnt++;
 
-		if(cnt>5 && flag==1) return;
+		if(cnt>5 && flag==1) return; // 4¹øÀ» ¼±ÅÃÇßÀ» °æ¿ì(flag==1) 1¹ø¾¿¸¸ ¼öÇà 
 	}
 }
 void func_3()
 {
-	init();
+	init(); // ÃÊ±âÈ­ 
 	int i, j, num=0, cnt=0;
-	for(j=0; j<3; j++) digitalWrite(led_pin[j], LOW); // init led state
+	for(j=0; j<3; j++) digitalWrite(led_pin[j], LOW); // LED ²ô°í ½ÃÀÛ 
 
 	while(1)
 	{
 		for(i=0; i<7; i++)
-			digitalWrite(pin_arr[i], fnd_arr[num][i]); // fndì— ìˆ«ì ì¶œë ¥
+			digitalWrite(pin_arr[i], fnd_arr[num][i]); // fnd¿¡ ¼ıÀÚ Ãâ·Â 
 
 		num++;
 		cnt++;
@@ -191,13 +184,13 @@ void func_3()
 			for(j=0; j<3; j++) digitalWrite(led_pin[j], LOW);
 			delay(100);
 		}
-		if(num==9 && flag==1) return; // flagê°€ 1ì¼ ê²½ìš°ì—ëŠ” 1 cycleë§Œ ì‹¤í–‰
+		if(num==9 && flag==1) return; // 4¹øÀ» ¼±ÅÃÇßÀ» °æ¿ì(flag==1) 1¹ø¾¿¸¸ ¼öÇà
 	}
 }
 
 void func_4()
 {
-	while(1) // 1, 2, 3ë²ˆì„ í•œë²ˆì”© ë°˜ë³µí•˜ë©° ì‹¤í–‰
+	while(1) // 1, 2, 3¹ø µ¿ÀÛÀ» ¹İº¹ÇÏ¸ç ¼öÇà 
 	{
 		func_1();
 		func_2();
@@ -232,10 +225,10 @@ int main()
                     char data;
                     printf(">");
 					scanf(" %c", &data);
-                    if(data == 'q' || data == 'Q') // që¥¼ ì…ë ¥ë°›ì„ ê²½ìš°
+                    if(data == 'q' || data == 'Q') // q¸¦ ÀÔ·Â¹Ş¾ÒÀ» ¶§ 
                     {
-                        kill(pid, SIGINT); // forkí•œ ìì‹ í”„ë¡œì„¸ìŠ¤ì— kill signal ì „ì†¡
-                        while(waitpid(pid, &status, 0)<0); // ìì‹ í”„ë¡œì„¸ìŠ¤ê°€ ì£½ì„ ë•Œ ê¹Œì§€ wait
+                        kill(pid, SIGINT); // forkÇÑ ÀÚ½Ä ÇÁ·Î¼¼¼­¿¡°Ô kill signal Àü¼Û 
+                        while(waitpid(pid, &status, 0)<0); // ÀÚ½Ä ÇÁ·Î¼¼¼­°¡ Á×À» ¶§ ±îÁö wait
                         break;
 						flag=0;
                     }
@@ -248,7 +241,7 @@ int main()
                 else if(num=='3') func_3();
 				else if(num=='4')
 				{
-					flag=1; // func_1, 2, 3 try one time
+					flag=1; // func_1, 2, 3À» ÇÑ¹ø¾¿¸¸ ¼öÇàÇÏ±â À§ÇÑ º¯¼ö ¼³Á¤ 
 					func_4();
 				}
 			}
